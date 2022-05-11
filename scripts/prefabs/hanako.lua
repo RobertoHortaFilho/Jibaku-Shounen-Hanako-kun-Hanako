@@ -64,17 +64,26 @@ end
 
 
 local function CustomSanityFn(inst, dt)
-	return -2
+	return 0
 end
 
 local function update_uwu(inst)
 	--print("oi print")
 end
 
-local function OnAttackOther(inst, data)
-	inst.components.sanity:DoDelta(15)
-	--inst.components.talker:Say("porra é essa irmao?")
-	
+local function OnKillerOther(inst, data)
+	local victim = data.victim
+	if victim:HasTag("monster")then
+		inst.components.sanity:DoDelta(4)
+		inst.components.health:DoDelta(3)
+	else
+		if victim:HasTag("hostile") then
+			inst.components.hunger:DoDelta(-6)
+		else
+			inst.components.sanity:DoDelta(-8)
+			inst.components.health:DoDelta(-2)
+		end 
+	end
 end
 
 -- This initializes for the server only. Components are added here.
@@ -94,7 +103,7 @@ local master_postinit = function(inst)
 	inst.components.sanity:SetMax(TUNING.HANAKO_SANITY)
 	
 	-- Damage multiplier (optional)
-    inst.components.combat.damagemultiplier = 1
+    inst.components.combat.damagemultiplier = 2
 	
 	-- Hunger rate (optional)
 	inst.components.hunger.hungerrate = 1 * TUNING.WILSON_HUNGER_RATE
@@ -105,7 +114,7 @@ local master_postinit = function(inst)
 	inst.components.sanity:AddSanityAuraImmunity("ghost")
     inst.components.sanity:SetPlayerGhostImmunity(true)
 
-	inst:ListenForEvent("killed", OnAttackOther)
+	inst:ListenForEvent("killed", OnKillerOther)
 	
 	inst.OnLoad = onload
     inst.OnNewSpawn = onload
