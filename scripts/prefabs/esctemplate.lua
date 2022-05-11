@@ -7,7 +7,7 @@ local assets = {
 -- Your character's stats
 TUNING.ESCTEMPLATE_HEALTH = 150
 TUNING.ESCTEMPLATE_HUNGER = 150
-TUNING.ESCTEMPLATE_SANITY = 200
+TUNING.ESCTEMPLATE_SANITY = 120
 
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.ESCTEMPLATE = {
@@ -53,6 +53,14 @@ local common_postinit = function(inst)
 	inst.MiniMapEntity:SetIcon( "esctemplate.tex" )
 end
 
+local function CustomSanityFn(inst, dt)
+	return 0
+end
+
+local function update_uwu(inst)
+	print("oi print")
+end
+
 -- This initializes for the server only. Components are added here.
 local master_postinit = function(inst)
 	-- Set starting inventory
@@ -74,6 +82,14 @@ local master_postinit = function(inst)
 	
 	-- Hunger rate (optional)
 	inst.components.hunger.hungerrate = 1 * TUNING.WILSON_HUNGER_RATE
+
+	inst._update_task_uwu = inst:DoPeriodicTask(1, update_uwu)
+
+	inst.components.sanity.custom_rate_fn = CustomSanityFn -- diminuir sanidade
+	inst.components.sanity:AddSanityAuraImmunity("ghost")
+    inst.components.sanity:SetPlayerGhostImmunity(true)
+
+
 	
 	inst.OnLoad = onload
     inst.OnNewSpawn = onload
