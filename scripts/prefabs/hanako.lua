@@ -98,7 +98,27 @@ local function OnKillerOther(inst, data)
 			inst.components.sanity:DoDelta(-6)
 		end 
 	end
+end
 
+
+local function cb_fn()
+
+end
+
+local function OnHitOther(inst, data)
+	if data.weapon ~= nil then
+		local weapon = data.weapon
+		if weapon:HasTag("hanakoknife") then
+			if data.target ~= nil then
+				local target = data.target
+				if target.HasTag("hanakoheal")then
+				else
+					target.AddTag("hanakoheal")
+				end
+			end
+			inst.components.hunger:DoDelta(-10)
+		end
+	end
 end
 
 -- This initializes for the server only. Components are added here.
@@ -130,6 +150,7 @@ local master_postinit = function(inst)
     inst.components.sanity:SetPlayerGhostImmunity(true)
 
 	inst:ListenForEvent("killed", OnKillerOther)
+	inst:ListenForEvent("onhitother", OnHitOther)
 	
 	inst:AddTag("hanako")
 
