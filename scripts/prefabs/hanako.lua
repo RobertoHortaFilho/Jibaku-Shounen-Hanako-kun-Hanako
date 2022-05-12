@@ -15,6 +15,7 @@ TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.HANAKO = {
 	"flint",
 	"twigs",
 	"twigs",
+	"spear",
 }
 
 print("mod")
@@ -64,11 +65,18 @@ end
 
 
 local function CustomSanityFn(inst, dt)
-	return 0
+	return -0.05 ---1
 end
 
-local function update_uwu(inst)
-	--print("oi print")
+local function ChangeDamage(inst)
+	local sanityPorcentagem = inst.components.sanity:GetRealPercent() * 100
+	if sanityPorcentagem > 75  then
+		inst.components.combat.damagemultiplier = 1.7
+	elseif sanityPorcentagem < 75 and sanityPorcentagem > 40 then
+		inst.components.combat.damagemultiplier = 1.3
+	elseif sanityPorcentagem < 40 then
+		inst.components.combat.damagemultiplier = 1
+	end
 end
 
 local function OnKillerOther(inst, data)
@@ -77,13 +85,14 @@ local function OnKillerOther(inst, data)
 		inst.components.sanity:DoDelta(4)
 		inst.components.health:DoDelta(3)
 	else
-		if victim:HasTag("hostile") then
+		if victim:HasTag("hostile") or victim:HasTag("bee")then
 			inst.components.hunger:DoDelta(-6)
 		else
 			inst.components.sanity:DoDelta(-8)
 			inst.components.health:DoDelta(-2)
 		end 
 	end
+
 end
 
 -- This initializes for the server only. Components are added here.
@@ -103,12 +112,12 @@ local master_postinit = function(inst)
 	inst.components.sanity:SetMax(TUNING.HANAKO_SANITY)
 	
 	-- Damage multiplier (optional)
-    inst.components.combat.damagemultiplier = 2
+    inst.components.combat.damagemultiplier = 1
 	
 	-- Hunger rate (optional)
-	inst.components.hunger.hungerrate = 1 * TUNING.WILSON_HUNGER_RATE
+	inst.components.hunger.hungerrate = 0.85  * TUNING.WILSON_HUNGER_RATE
 
-	--inst._update_task_uwu = inst:DoPeriodicTask(1, update_uwu)
+	inst._changeDamage = inst:DoPeriodicTask(1, ChangeDamage)
 
 	inst.components.sanity.custom_rate_fn = CustomSanityFn -- diminuir sanidade
 	inst.components.sanity:AddSanityAuraImmunity("ghost")
