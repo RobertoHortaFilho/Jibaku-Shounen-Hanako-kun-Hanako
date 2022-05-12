@@ -4,6 +4,10 @@ local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
 }
 
+local prefabs = {
+	'hanako_knife',
+}
+
 -- Your character's stats
 TUNING.HANAKO_HEALTH = 150
 TUNING.HANAKO_HUNGER = 150
@@ -11,19 +15,9 @@ TUNING.HANAKO_SANITY = 120
 
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.HANAKO = {
-	"flint",
-	"flint",
-	"twigs",
-	"twigs",
-	"spear",
+	"hanako_knife",
 }
 
-print("mod")
-print("mod")
-print("mod")
-print("mod")
-print("mod")
-print("mod")
 
 local start_inv = {}
 for k, v in pairs(TUNING.GAMEMODE_STARTING_ITEMS) do
@@ -62,34 +56,46 @@ local common_postinit = function(inst)
 end
 
 
-
-
 local function CustomSanityFn(inst, dt)
-	return -0.05 ---1
+	
+	local HungerPorcentagem = inst.components.hunger:GetPercent() * 100
+	if HungerPorcentagem > 70  then
+		return 0
+	elseif HungerPorcentagem < 71 and HungerPorcentagem > 33 then
+		return -0.1
+	elseif HungerPorcentagem < 34 then
+		return -0.3
+	end
+	return 0
 end
 
 local function ChangeDamage(inst)
 	local sanityPorcentagem = inst.components.sanity:GetRealPercent() * 100
-	if sanityPorcentagem > 75  then
-		inst.components.combat.damagemultiplier = 1.7
-	elseif sanityPorcentagem < 75 and sanityPorcentagem > 40 then
+	if sanityPorcentagem > 70  then
+		inst.components.combat.damagemultiplier = 1.6
+	elseif sanityPorcentagem < 71 and sanityPorcentagem > 33 then
 		inst.components.combat.damagemultiplier = 1.3
-	elseif sanityPorcentagem < 40 then
+	elseif sanityPorcentagem < 34 then
 		inst.components.combat.damagemultiplier = 1
 	end
 end
 
 local function OnKillerOther(inst, data)
+	--inst.components.hunger:DoDelta(-10)
 	local victim = data.victim
-	if victim:HasTag("monster")then
+	if victim:HasTag("monster") or victim:HasTag("hostile")then
 		inst.components.sanity:DoDelta(4)
 		inst.components.health:DoDelta(3)
 	else
-		if victim:HasTag("hostile") or victim:HasTag("bee")then
-			inst.components.hunger:DoDelta(-6)
-		else
-			inst.components.sanity:DoDelta(-8)
+		if victim:HasTag("rabbit") or 
+		victim:HasTag("bee") or 
+		victim:HasTag("butterfly") or 
+		victim:HasTag("bird") or 
+		victim:HasTag("critter")then --butterfly bird critter hostile
+			inst.components.sanity:DoDelta(-7)
 			inst.components.health:DoDelta(-2)
+		else
+			inst.components.sanity:DoDelta(-6)
 		end 
 	end
 
@@ -115,7 +121,7 @@ local master_postinit = function(inst)
     inst.components.combat.damagemultiplier = 1
 	
 	-- Hunger rate (optional)
-	inst.components.hunger.hungerrate = 0.85  * TUNING.WILSON_HUNGER_RATE
+	inst.components.hunger.hungerrate = 0.9  * TUNING.WILSON_HUNGER_RATE
 
 	inst._changeDamage = inst:DoPeriodicTask(1, ChangeDamage)
 
@@ -125,6 +131,8 @@ local master_postinit = function(inst)
 
 	inst:ListenForEvent("killed", OnKillerOther)
 	
+	inst:AddTag("hanako")
+
 	inst.OnLoad = onload
     inst.OnNewSpawn = onload
 	
