@@ -108,12 +108,12 @@ end
 local function OnHitOther(inst, data)
 	if data.weapon ~= nil then
 		local weapon = data.weapon
-		if weapon:HasTag("hanakoknife") then
+		if weapon:HasTag("aaaaaaaaaj") then
 			if data.target ~= nil then
 				local target = data.target
-				if target.HasTag("hanakoheal")then
+				if target:HasTag("hanakoheal")then
 				else
-					target.AddTag("hanakoheal")
+					target:AddTag("hanakoheal")
 				end
 			end
 			inst.components.hunger:DoDelta(-10)
