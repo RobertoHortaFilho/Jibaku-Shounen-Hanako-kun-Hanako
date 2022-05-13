@@ -1,10 +1,11 @@
 PrefabFiles = {
 	"hanako",
 	"hanako_none",
-    "hanako_knife",
+    
 }
 
 Assets = {
+
     Asset( "IMAGE", "images/saveslot_portraits/hanako.tex" ),
     Asset( "ATLAS", "images/saveslot_portraits/hanako.xml" ),
 
@@ -41,6 +42,7 @@ AddMinimapAtlas("images/map_icons/hanako.xml")
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
 
+
 -- The character select screen lines
 STRINGS.CHARACTER_TITLES.hanako = "The Sample Character"
 STRINGS.CHARACTER_NAMES.hanako = "Esc"
@@ -52,8 +54,10 @@ STRINGS.CHARACTER_SURVIVABILITY.hanako = "Slim"
 STRINGS.CHARACTERS.HANAKO = require "speech_hanako"
 
 -- The character's name as appears in-game 
-STRINGS.NAMES.HANAKO = "Esc"
-STRINGS.SKIN_NAMES.hanako_none = "Esc"
+STRINGS.NAMES.HANAKO = "hanako"
+STRINGS.SKIN_NAMES.hanako_none = "hanako"
+
+
 
 -- The skins shown in the cycle view window on the character select screen.
 -- A good place to see what you can put in here is in skinutils.lua, in the function GetSkinModes
