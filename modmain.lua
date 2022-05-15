@@ -41,7 +41,7 @@ AddMinimapAtlas("images/map_icons/hanako.xml")
 
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
-
+local Ingredient = GLOBAL.Ingredient
 
 -- The character select screen lines
 STRINGS.CHARACTER_TITLES.hanako = "The Sample Character"
@@ -73,3 +73,24 @@ local skin_modes = {
 
 -- Add mod character to mod character list. Also specify a gender. Possible genders are MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL.
 AddModCharacter("hanako", "FEMALE", skin_modes)
+
+
+
+STRINGS.NAMES.KNIFE_HANAKO = "Hanako Knife"
+STRINGS.RECIPE_DESC.KNIFE_HANAKO = "knice"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.KNIFE_HANAKO = "That's one scientific hat."
+
+AddRecipe("knife_hanako",
+{
+    Ingredient("cutgrass",4)
+},
+GLOBAL.RECIPETABS.SCIENCE,
+GLOBAL.TECH.NONE,
+nil, -- placer
+nil, -- min space 1.5 
+nil, -- no unlock   
+nil, -- num to give
+"hanako", -- tag character
+nil, -- atlas
+nil  -- image
+)
