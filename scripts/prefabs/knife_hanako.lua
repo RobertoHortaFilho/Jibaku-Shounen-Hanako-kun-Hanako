@@ -15,17 +15,22 @@ local function onunequip(inst, owner)
     owner.AnimState:Show("ARM_normal")
 end
 
-local function OnAttack(self, attacker, target)
-    if attacker ~= nil then
-        if attacker:HasTag("hanako") then
-            --if target ~= nil and target.component.health ~= nil and not target.component.health:IsDead--() then
-                -- existe um alvo e ele ta vivo
-               -- target:AddTag("hanakoHeal")
-            --end 
-        end
-    end
 
+local function OnAttack(inst, attacker, target)
+    if target ~= nil and attacker ~= nil then
+        if attacker:HasTag("player") and target:HasTag("hanakoheal") and attacker.components.health ~= nil then
+            attacker.components.health:DoDelta(2)
+        end
+        
+        if attacker:HasTag("hanako") and not target:HasTag("hanakoheal") and target.components.health ~= nil then
+            target:AddTag("hanakoheal")
+            target.components.health:DoDelta(-10)
+        end
+    
+    end
 end
+
+
 
 -- fn
 
@@ -58,8 +63,8 @@ local function fn()
     end
 
     inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(54)
-    --inst.components.weapon:SetOnAttack(OnAttack)
+    inst.components.weapon:SetDamage(52)
+    inst.components.weapon:SetOnAttack(OnAttack)
 
     -------
 
@@ -77,7 +82,7 @@ local function fn()
 
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
-    inst.components.equippable:SetOnUnequip(onunequip)s
+    inst.components.equippable:SetOnUnequip(onunequip)
 
     MakeHauntableLaunch(inst)
 

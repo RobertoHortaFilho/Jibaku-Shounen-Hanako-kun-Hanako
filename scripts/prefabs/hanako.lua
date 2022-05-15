@@ -5,7 +5,8 @@ local assets = {
 }
 
 local prefabs = {
-	
+	"knife_hanako",
+	"spear",
 }
 
 -- Your character's stats
@@ -15,7 +16,8 @@ TUNING.HANAKO_SANITY = 120
 
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.HANAKO = {
-	
+	"knife_hanako",
+	"spear",
 }
 
 
