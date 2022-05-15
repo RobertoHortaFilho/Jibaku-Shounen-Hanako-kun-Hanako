@@ -24,7 +24,7 @@ local function OnAttack(inst, attacker, target)
         
         if attacker:HasTag("hanako") and not target:HasTag("hanakoheal") and target.components.health ~= nil then
             target:AddTag("hanakoheal")
-            target.components.health:DoDelta(-10)
+            target.components.health:DoDelta(-5)
         end
     
     end
