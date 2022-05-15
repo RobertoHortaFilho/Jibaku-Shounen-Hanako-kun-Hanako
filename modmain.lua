@@ -44,9 +44,9 @@ local STRINGS = GLOBAL.STRINGS
 local Ingredient = GLOBAL.Ingredient
 
 -- The character select screen lines
-STRINGS.CHARACTER_TITLES.hanako = "The Sample Character"
-STRINGS.CHARACTER_NAMES.hanako = "Esc"
-STRINGS.CHARACTER_DESCRIPTIONS.hanako = "*Perk 1\n*Perk 2\n*Perk 3"
+STRINGS.CHARACTER_TITLES.hanako = "Hanako-kun"
+STRINGS.CHARACTER_NAMES.hanako = "Hanako"
+STRINGS.CHARACTER_DESCRIPTIONS.hanako = "*Moster Killer\n*More Damage with your knife\n*Friendly protector"
 STRINGS.CHARACTER_QUOTES.hanako = "\"Quote\""
 STRINGS.CHARACTER_SURVIVABILITY.hanako = "Slim"
 
