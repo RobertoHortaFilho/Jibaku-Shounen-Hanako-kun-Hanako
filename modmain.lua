@@ -2,6 +2,7 @@ PrefabFiles = {
 	"hanako",
 	"hanako_none",
     "knife_hanako",
+    "haku_joudai",
 }
 
 Assets = {
