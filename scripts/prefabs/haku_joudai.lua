@@ -19,7 +19,7 @@ local function ChangeDamage(inst)
             if viewer.components.health ~= nil then
                 viewer.components.health:DoDelta(-3)
                 viewer:DoTaskInTime(4.8,function() viewer.components.health:DoDelta(3) end)
-                -- disableDmg(inst)
+                inst.components.finiteuses:Use(1)
                 -- aadicionaar no viewer um listener que vai daar += .3 da dano e vai criaaar um aauto destroyer pra ele e essa funça ose repete a cada 5 segundos consumindo durabilidaade
             end
         end
@@ -34,7 +34,7 @@ local function getstatus(inst, viewer)
             disableDmg(inst)
         else
             enambleDmg(inst)
-            ChangeDamage(inst) --teste
+            ChangeDamage(inst)
         end
     end
 end
@@ -64,8 +64,8 @@ local function fn()
     end
 
     inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(100)
-    inst.components.finiteuses:SetUses(100)
+    inst.components.finiteuses:SetMaxUses(500)
+    inst.components.finiteuses:SetUses(500)
     inst.components.finiteuses:SetOnFinished(inst.Remove)
 
     inst:AddComponent("inspectable")
