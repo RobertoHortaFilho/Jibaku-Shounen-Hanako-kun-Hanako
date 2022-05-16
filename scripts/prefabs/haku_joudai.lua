@@ -7,12 +7,9 @@ local assets =
 local function disableDmg(inst)
     inst._activateDmg = false
 end
-local function disableDmgPlus(inst, owner)
-    inst.player = owner
-    inst._activateDmg = false
-end
 local function enambleDmg(inst)
     inst._activateDmg = true
+    
 end
 
 local function ChangeDamage(inst)
@@ -20,7 +17,9 @@ local function ChangeDamage(inst)
         local viewer = inst._player
         if inst._activateDmg then
             if viewer.components.health ~= nil then
-                viewer.components.health:DoDelta(-2)
+                viewer.components.health:DoDelta(-3)
+                viewer:DoTaskInTime(4.8,function() viewer.components.health:DoDelta(3) end)
+                -- disableDmg(inst)
                 -- aadicionaar no viewer um listener que vai daar += .3 da dano e vai criaaar um aauto destroyer pra ele e essa funça ose repete a cada 5 segundos consumindo durabilidaade
             end
         end
@@ -35,6 +34,7 @@ local function getstatus(inst, viewer)
             disableDmg(inst)
         else
             enambleDmg(inst)
+            ChangeDamage(inst) --teste
         end
     end
 end
@@ -79,11 +79,12 @@ local function fn()
     
     inst._activateDmg = false
     inst._player = nil
-    inst._changeDamage = inst:DoPeriodicTask(1, ChangeDamage)
+    inst._changeDamage = inst:DoPeriodicTask(5, ChangeDamage)
 
     inst:ListenForEvent("ondropped",disableDmg)
     inst:ListenForEvent("onactiveitem",disableDmg)
-    inst:ListenForEvent("onputininventory",disableDmgPlus)
+    inst:ListenForEvent("onputininventory",disableDmg)
+    inst:ListenForEvent("onputininventory",disableDmg)
 
     return inst
 end
