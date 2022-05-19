@@ -4,40 +4,78 @@ local assets =
     Asset("ANIM", "anim/swap_spear.zip"),
 }
 
-local function disableDmg(inst)
-    inst._activateDmg = false
-end
-local function enambleDmg(inst)
-    inst._activateDmg = true
-    
+
+
+local function onAttackHaku(inst,data)
+    local r = math.random(1,100)
+    local baseDamage = 10 
+    if r >= 60 then
+        inst.components.sanity:DoDelta(1)
+    end
+    if r >= 80 then
+        inst.components.health:DoDelta(1)
+    end
+    if r >= 90 then
+        baseDamage = 20
+    end
+
+    if data.target ~= nil and data.target.components ~= nil and data.target.components.health ~= nil then
+        local enemy = data.target
+        local damage = inst.components.combat.damagemultiplier or 1
+        enemy.components.health:DoDelta(-(damage * baseDamage))
+    end
 end
 
-local function ChangeDamage(inst)
-    if inst._player ~= nil then -- tirar o player quando tirar do inventario 
-        local viewer = inst._player
-        if inst._activateDmg then
-            if viewer.components.health ~= nil then
-                viewer.components.health:DoDelta(-3)
-                viewer:DoTaskInTime(4.8,function() viewer.components.health:DoDelta(3) end)
-                inst.components.finiteuses:Use(1)
-                -- aadicionaar no viewer um listener que vai daar += .3 da dano e vai criaaar um aauto destroyer pra ele e essa funça ose repete a cada 5 segundos consumindo durabilidaade
+
+local function disableDmg(inst)
+    inst.activateDmg = false
+    if inst.components.inventoryitem.owner then
+        local playerbuff = inst.components.inventoryitem.owner
+        if playerbuff.components ~= nil and playerbuff.components.health then
+
+            playerbuff:RemoveEventCallback("onhitother", onAttackHaku)
+            playerbuff.components.health:DoDelta(20)
+            
+            if inst.HakuTimer ~= nil then
+                inst.HakuTimer:Cancel()
+                inst.HakuTimer = nil
+            end
+
+        end
+    end
+end
+local function enambleDmg(inst)
+    inst.activateDmg = true
+    if inst.components.inventoryitem.owner then
+        local playerbuff = inst.components.inventoryitem.owner
+        if playerbuff.components ~= nil and playerbuff.components.health then
+            playerbuff:ListenForEvent("onhitother", onAttackHaku)
+
+            if inst.HakuTimer == nil then
+                inst.HakuTimer = inst:DoPeriodicTask(5, function(inst)
+                   inst.components.finiteuses:Use()
+                end)
             end
         end
     end
 end
 
+
+
 local function getstatus(inst, viewer)
     if viewer ~= nil then
-        inst._player = viewer
-
-        if inst._activateDmg then
+        if inst.activateDmg then 
             disableDmg(inst)
         else
             enambleDmg(inst)
-            ChangeDamage(inst)
         end
     end
 end
+
+
+
+
+
 
 local function fn()
     local inst = CreateEntity()
@@ -64,8 +102,8 @@ local function fn()
     end
 
     inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(500)
-    inst.components.finiteuses:SetUses(500)
+    inst.components.finiteuses:SetMaxUses(300)
+    inst.components.finiteuses:SetUses(300)
     inst.components.finiteuses:SetOnFinished(inst.Remove)
 
     inst:AddComponent("inspectable")
@@ -77,14 +115,13 @@ local function fn()
 
     MakeHauntableLaunch(inst)
     
-    inst._activateDmg = false
-    inst._player = nil
-    inst._changeDamage = inst:DoPeriodicTask(5, ChangeDamage)
+    inst.activateDmg = false
 
     inst:ListenForEvent("ondropped",disableDmg)
     inst:ListenForEvent("onactiveitem",disableDmg)
     inst:ListenForEvent("onputininventory",disableDmg)
     inst:ListenForEvent("onputininventory",disableDmg)
+    inst:ListenForEvent("itemlose",disableDmg)
 
     return inst
 end
