@@ -6,7 +6,6 @@ local assets = {
 
 local prefabs = {
 	"knife_hanako",
-	"spear",
 	"haku_joudai",
 }
 
@@ -18,7 +17,6 @@ TUNING.HANAKO_SANITY = 120
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.HANAKO = {
 	"knife_hanako",
-	"spear",
 	"haku_joudai",
 }
 
@@ -88,8 +86,8 @@ local function OnKillerOther(inst, data)
 	--inst.components.hunger:DoDelta(-10)
 	local victim = data.victim
 	if victim:HasTag("monster") or victim:HasTag("hostile")then
-		inst.components.sanity:DoDelta(4)
-		inst.components.health:DoDelta(3)
+		inst.components.sanity:DoDelta(8)
+		inst.components.health:DoDelta(10)
 	else
 		if victim:HasTag("rabbit") or 
 		victim:HasTag("bee") or 

@@ -1,31 +1,14 @@
 local assets =
 {
-    Asset("ANIM", "anim/spear.zip"),
-    Asset("ANIM", "anim/swap_spear.zip"),
+    Asset("ANIM", "anim/frog_legs.zip"),
 }
 
-local function onequip(inst, owner)
-    local skin_build = inst:GetSkinBuild()
-    if skin_build ~= nil then
-        owner:PushEvent("equipskinneditem", inst:GetSkinName())
-        owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_spear", inst.GUID, "swap_spear")
-    else
-        owner.AnimState:OverrideSymbol("swap_object", "swap_spear", "swap_spear")
-    end
-    owner.AnimState:Show("ARM_carry")
-    owner.AnimState:Hide("ARM_normal")
-end
+local prefabs =
+{
+    "cutgrass",
+}
 
-local function onunequip(inst, owner)
-    owner.AnimState:Hide("ARM_carry")
-    owner.AnimState:Show("ARM_normal")
-    local skin_build = inst:GetSkinBuild()
-    if skin_build ~= nil then
-        owner:PushEvent("unequipskinneditem", inst:GetSkinName())
-    end
-end
-
-local function fn()
+local function commonfn(anim, dryable, cookable)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -34,17 +17,21 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("spear")
-    inst.AnimState:SetBuild("swap_spear")
-    inst.AnimState:PlayAnimation("idle")
+    inst.AnimState:SetBank("frog_legs")
+    inst.AnimState:SetBuild("frog_legs")
+    inst.AnimState:PlayAnimation(anim)
 
-    inst:AddTag("sharp")
-    inst:AddTag("pointy")
+    if dryable then
+        --dryable (from dryable component) added to pristine state for optimization
+        inst:AddTag("dryable")
+    end
 
-    --weapon (from weapon component) added to pristine state for optimization
-    inst:AddTag("weapon")
+    if cookable then
+        --cookable (from cookable component) added to pristine state for optimization
+        inst:AddTag("cookable")
+    end
 
-    MakeInventoryFloatable(inst, "med", 0.05, {1.1, 0.5, 1.1}, true, -9)
+    MakeInventoryFloatable(inst)
 
     inst.entity:SetPristine()
 
@@ -52,28 +39,70 @@ local function fn()
         return inst
     end
 
-    inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(TUNING.SPEAR_DAMAGE)
+    inst:AddComponent("edible")
+    inst.components.edible.foodtype = FOODTYPE.MEAT
 
-    -------
+    inst:AddComponent("perishable")
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
+    inst.components.perishable:StartPerishing()
+    inst.components.perishable.onperishreplacement = "spoiled_food"
 
-    inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(TUNING.SPEAR_USES)
-    inst.components.finiteuses:SetUses(TUNING.SPEAR_USES)
+    if dryable then
+        inst:AddComponent("dryable")
+        inst.components.dryable:SetProduct("smallmeat_dried")
+        inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
+    end
 
-    inst.components.finiteuses:SetOnFinished(inst.Remove)
+    if cookable then
+        inst:AddComponent("cookable")
+        inst.components.cookable.product = "froglegs_cooked"
+    end
+
+    inst:AddComponent("stackable")
+    inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
+
+    inst:AddComponent("bait")
 
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
 
-    inst:AddComponent("equippable")
-    inst.components.equippable:SetOnEquip(onequip)
-    inst.components.equippable:SetOnUnequip(onunequip)
+    MakeHauntableLaunchAndPerish(inst)
 
-    MakeHauntableLaunch(inst)
+    inst:AddComponent("tradable")
+    inst.components.tradable.goldvalue = 0
 
     return inst
 end
 
-return Prefab("donuts_hanako", fn, assets)
+local function defaultfn()
+    local inst = commonfn("idle", true, true)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.edible.healthvalue = 0
+    inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
+    inst.components.edible.sanityvalue = -TUNING.SANITY_SMALL
+
+    return inst
+end
+
+local function cookedfn()
+    local inst = commonfn("cooked")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.edible.healthvalue = TUNING.HEALING_TINY
+    inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_MED)
+
+    return inst
+end
+
+return Prefab("donuts_hanako", defaultfn, assets, prefabs),
+        Prefab("cutgrass", cookedfn, assets)
