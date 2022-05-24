@@ -86,17 +86,18 @@ local function OnKillerOther(inst, data)
 	local victim = data.victim
 	if victim:HasTag("monster") or victim:HasTag("hostile")then
 		inst.components.sanity:DoDelta(8)
+		local healthRegen = 5
 		inst.components.health:DoDelta(10)
 	else
 		if victim:HasTag("rabbit") or 
 		victim:HasTag("bee") or 
 		victim:HasTag("butterfly") or 
 		victim:HasTag("bird") or 
-		victim:HasTag("critter")then --butterfly bird critter hostile
+		victim:HasTag("critter")then --butterfly bird critter 
 			inst.components.sanity:DoDelta(-7)
 			inst.components.health:DoDelta(-2)
 		else
-			inst.components.sanity:DoDelta(-6)
+			inst.components.sanity:DoDelta(-5)
 		end 
 	end
 end
@@ -110,7 +111,8 @@ local function OnHitOther(inst, data)
 	if data.weapon ~= nil then
 		local weapon = data.weapon
 		if weapon:HasTag("knifehanako") then
-			--inst.components.health:DoDelta(1)
+			local sanityPorcentagem = inst.components.sanity:GetRealPercent() * 3
+			inst.components.health:DoDelta(math.ceil( sanityPorcentagem ))
 		end
 	end
 end

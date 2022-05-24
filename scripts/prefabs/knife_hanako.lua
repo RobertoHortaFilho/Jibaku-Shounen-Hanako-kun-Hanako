@@ -19,11 +19,11 @@ end
 local function OnAttack(inst, attacker, target)
     if target ~= nil and attacker ~= nil then
         if attacker:HasTag("player") and target:HasTag("hanakoheal") and attacker.components.health ~= nil and not attacker:HasTag('hanako') then
-			attacker.components.health:DoDelta(2)
+			attacker.components.health:DoDelta(3)
             
         end
-        if attacker:HasTag("hanako") and target.components.sanity ~= nil then
-            attacker.components.health:DoDelta(1)
+        if attacker:HasTag("hanako") and attacker.components.sanity ~= nil then
+            attacker.components.sanity:DoDelta(1)
         end
         if attacker:HasTag("hanako") and not target:HasTag("hanakoheal") then
             target:AddTag("hanakoheal")
@@ -65,7 +65,7 @@ local function fn()
     end
 
     inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(52)
+    inst.components.weapon:SetDamage(42)
     inst.components.weapon:SetOnAttack(OnAttack)
 
     -------

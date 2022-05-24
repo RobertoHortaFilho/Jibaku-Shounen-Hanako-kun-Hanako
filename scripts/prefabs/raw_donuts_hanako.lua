@@ -8,7 +8,7 @@ local prefabs =
     "cutgrass",
 }
 
-local function commonfn(anim, dryable, cookable)
+local function commonfn(anim, cookable)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -20,11 +20,6 @@ local function commonfn(anim, dryable, cookable)
     inst.AnimState:SetBank("frog_legs")
     inst.AnimState:SetBuild("frog_legs")
     inst.AnimState:PlayAnimation(anim)
-
-    if dryable then
-        --dryable (from dryable component) added to pristine state for optimization
-        inst:AddTag("dryable")
-    end
 
     if cookable then
         --cookable (from cookable component) added to pristine state for optimization
@@ -40,18 +35,12 @@ local function commonfn(anim, dryable, cookable)
     end
 
     inst:AddComponent("edible")
-    inst.components.edible.foodtype = FOODTYPE.MEAT
+    inst.components.edible.foodtype = FOODTYPE.GENERIC
 
     inst:AddComponent("perishable")
-    inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_MED)
     inst.components.perishable:StartPerishing()
     inst.components.perishable.onperishreplacement = "spoiled_food"
-
-    if dryable then
-        inst:AddComponent("dryable")
-        inst.components.dryable:SetProduct("smallmeat_dried")
-        inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
-    end
 
     if cookable then
         inst:AddComponent("cookable")
@@ -61,8 +50,6 @@ local function commonfn(anim, dryable, cookable)
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
 
-    inst:AddComponent("bait")
-
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
@@ -70,22 +57,22 @@ local function commonfn(anim, dryable, cookable)
     MakeHauntableLaunchAndPerish(inst)
 
     inst:AddComponent("tradable")
-    inst.components.tradable.goldvalue = 0
+    inst.components.tradable.goldvalue = 4
 
     return inst
 end
 
 local function defaultfn()
-    local inst = commonfn("idle", true, true)
+    local inst = commonfn("idle", true)
 
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst.components.edible.healthvalue = 0
-    inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
-    inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
-    inst.components.edible.sanityvalue = -TUNING.SANITY_SMALL
+    inst.components.edible.healthvalue = 15
+    inst.components.edible.hungervalue = 25
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_MED)
+    inst.components.edible.sanityvalue = 10
 
     return inst
 end
@@ -97,12 +84,13 @@ local function cookedfn()
         return inst
     end
 
-    inst.components.edible.healthvalue = TUNING.HEALING_TINY
-    inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
-    inst.components.perishable:SetPerishTime(TUNING.PERISH_MED)
+    inst.components.edible.healthvalue = 20
+    inst.components.edible.hungervalue = 30
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_SUPERSLOW)
+    inst.components.edible.sanityvalue = 30
 
     return inst
 end
 
-return Prefab("donuts_hanako", defaultfn, assets, prefabs),
-        Prefab("cutgrass", cookedfn, assets)
+return Prefab("raw_donuts_hanako", defaultfn, assets, prefabs),
+        Prefab("cutgrass", cookedfn, assets) --donuts_hanako
