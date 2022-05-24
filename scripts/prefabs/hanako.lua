@@ -17,7 +17,6 @@ TUNING.HANAKO_SANITY = 120
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.HANAKO = {
 	"knife_hanako",
-	"haku_joudai",
 }
 
 
@@ -74,11 +73,11 @@ end
 local function ChangeDamage(inst)
 	local sanityPorcentagem = inst.components.sanity:GetRealPercent() * 100
 	if sanityPorcentagem > 70  then
-		inst.components.combat.damagemultiplier = 1.6
+		inst.components.combat.damagemultiplier = 1.7
 	elseif sanityPorcentagem < 71 and sanityPorcentagem > 33 then
-		inst.components.combat.damagemultiplier = 1.3
+		inst.components.combat.damagemultiplier = 1.4
 	elseif sanityPorcentagem < 34 then
-		inst.components.combat.damagemultiplier = 1
+		inst.components.combat.damagemultiplier = 1.2
 	end
 end
 
@@ -110,15 +109,8 @@ end
 local function OnHitOther(inst, data)
 	if data.weapon ~= nil then
 		local weapon = data.weapon
-		if weapon:HasTag("aaaaaaaaaj") then
-			if data.target ~= nil then
-				local target = data.target
-				if target:HasTag("hanakoheal")then
-				else
-					target:AddTag("hanakoheal")
-				end
-			end
-			inst.components.hunger:DoDelta(-10)
+		if weapon:HasTag("knifehanako") then
+			--inst.components.health:DoDelta(1)
 		end
 	end
 end
@@ -140,7 +132,7 @@ local master_postinit = function(inst)
 	inst.components.sanity:SetMax(TUNING.HANAKO_SANITY)
 	
 	-- Damage multiplier (optional)
-    inst.components.combat.damagemultiplier = 1
+    inst.components.combat.damagemultiplier = 1.2
 	
 	-- Hunger rate (optional)
 	inst.components.hunger.hungerrate = 0.9  * TUNING.WILSON_HUNGER_RATE

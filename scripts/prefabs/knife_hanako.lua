@@ -18,13 +18,15 @@ end
 
 local function OnAttack(inst, attacker, target)
     if target ~= nil and attacker ~= nil then
-        if attacker:HasTag("player") and target:HasTag("hanakoheal") and attacker.components.health ~= nil then
-            attacker.components.health:DoDelta(2)
+        if attacker:HasTag("player") and target:HasTag("hanakoheal") and attacker.components.health ~= nil and not attacker:HasTag('hanako') then
+			attacker.components.health:DoDelta(2)
+            
         end
-        
-        if attacker:HasTag("hanako") and not target:HasTag("hanakoheal") and target.components.health ~= nil then
+        if attacker:HasTag("hanako") and target.components.sanity ~= nil then
+            attacker.components.health:DoDelta(1)
+        end
+        if attacker:HasTag("hanako") and not target:HasTag("hanakoheal") then
             target:AddTag("hanakoheal")
-            target.components.health:DoDelta(-5)
         end
     
     end
@@ -69,8 +71,8 @@ local function fn()
     -------
 
     inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(TUNING.SPEAR_USES*2)
-    inst.components.finiteuses:SetUses(TUNING.SPEAR_USES*2)
+    inst.components.finiteuses:SetMaxUses(400)
+    inst.components.finiteuses:SetUses(400)
 
     inst.components.finiteuses:SetOnFinished(inst.Remove)
 
